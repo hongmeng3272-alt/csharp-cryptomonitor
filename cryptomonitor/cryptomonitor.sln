@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cryptomonitor", "cryptomonitor\cryptomonitor.csproj", "{05618600-C24D-4AD9-84FC-7B9B8014FBBE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoMonitor.Test", "CryptoMonitor.Test\CryptoMonitor.Test.csproj", "{2FFE8F44-7F96-41A9-9E8A-D7D510E032A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{05618600-C24D-4AD9-84FC-7B9B8014FBBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05618600-C24D-4AD9-84FC-7B9B8014FBBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05618600-C24D-4AD9-84FC-7B9B8014FBBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FFE8F44-7F96-41A9-9E8A-D7D510E032A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FFE8F44-7F96-41A9-9E8A-D7D510E032A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FFE8F44-7F96-41A9-9E8A-D7D510E032A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FFE8F44-7F96-41A9-9E8A-D7D510E032A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

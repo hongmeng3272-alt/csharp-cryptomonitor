@@ -1,95 +1,30 @@
-﻿using Newtonsoft.Json;
+﻿using cryptomonitor.models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot;
-using cryptomonitor.models;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 
 namespace cryptomonitor
 {
-    internal class Program
+    public class Program
     {
         static void Main(string[] args)
         {
             //testCrypto();
-            warningMutiCurrency();
+            //Task.Run(() => warningMutiCurrency());
             Console.ReadKey();
         }
         private const string BaseUrl = "https://api.coingecko.com/api/v3/";
         private static readonly HttpClient client = new HttpClient();
         // warning set
-        private const string TargetCoinId = "bitcoin";
-        private const decimal AlertPriceThreshold = 70000; 
         private const int PollingIntervalSeconds = 60;
-        /// <summary>
-        /// only warning by sound and show messages on the screen
-        /// </summary>
-        private static async void testCrypto()
-        {
-            Console.WriteLine($"--- C# cryptocurrency ({TargetCoinId}) monitor started ---");
-            Console.WriteLine($"Warning price threshold: ${AlertPriceThreshold:N2}");
-            Console.WriteLine($"Polling interval: {PollingIntervalSeconds} s");
-            Console.WriteLine("------------------------------------------");
 
-            // CoinGecko API interface URL：receive the price of target coin
-            string apiUrl = $"{BaseUrl}simple/price?ids={TargetCoinId}&vs_currencies=usd";
-
-            while (true)
-            {
-                try
-                {
-                    // 1. call API
-                    var response1 = await client.GetAsync(apiUrl);
-                    if (response1.IsSuccessStatusCode)
-                    {
-                        CoinPrice response = JsonConvert.DeserializeObject<CoinPrice?>(response1.Content.ReadAsStringAsync().Result);
-
-                        if (response?.Bitcoin?.Usd > 0)
-                        {
-                            decimal currentPrice = response.Bitcoin.Usd;
-
-                            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {TargetCoinId} real price: ${currentPrice:N2}");
-
-                            // 2. check the condition
-                            if (currentPrice >= AlertPriceThreshold)
-                            {
-                                TriggerAlert(currentPrice);
-                            }
-                        }
-                    }
-                }
-                catch (HttpRequestException e)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"[ERROR] API request error: {e.Message}");
-                    Console.ResetColor();
-                }
-                catch (Exception ex)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"[ERROR] occur unknowing error: {ex.Message}");
-                    Console.ResetColor();
-                }
-
-                // 3. pause 
-                await Task.Delay(PollingIntervalSeconds * 1000);
-            }
-        }
-
-        private static void TriggerAlert(decimal price)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Beep(); // optional：Emit a notification sound.
-            Console.WriteLine("*************************************************");
-            Console.WriteLine($"!! 💥 price Warning：{TargetCoinId} reach or over ${AlertPriceThreshold:N2}。current price: ${price:N2}");
-            Console.WriteLine("*************************************************");
-            Console.ResetColor();
-        }
-
-
+        private static readonly string apitoken = "your token";
 
         private static List<MonitorSetting> MonitoringList = new List<MonitorSetting>
         {
@@ -105,7 +40,7 @@ namespace cryptomonitor
         /// <summary>
         /// muti currency and sending notifications via Telegram.
         /// </summary>
-        private static async void warningMutiCurrency()
+        private static async Task warningMutiCurrency()
         {
             Console.WriteLine("--- C# The multi-currency cryptocurrency monitor has been activated. ---");
             Console.WriteLine($"current warning {MonitoringList.Count} currencies，polling interval: {PollingIntervalSeconds} 秒");
@@ -114,7 +49,7 @@ namespace cryptomonitor
             // build ids
             string allCoinIds = string.Join(",", MonitoringList.Select(m => m.CoinId));
 
-            string apiUrl = $"{BaseUrl}simple/price?ids={allCoinIds}&vs_currencies=usd";
+            string apiUrl = $"{BaseUrl}simple/price?ids={allCoinIds}&vs_currencies=usd&x_cg_demo_api_key={apitoken}";
 
             while (true)
             {
@@ -130,7 +65,7 @@ namespace cryptomonitor
                 var response1 = await client.GetAsync(apiUrl);
                 if (response1.IsSuccessStatusCode)
                 {
-                    var priceData = JsonConvert.DeserializeObject<Dictionary<string, Currency>?>(response1.Content.ReadAsStringAsync().Result);
+                    var priceData = JsonConvert.DeserializeObject<Dictionary<string, Currency>?>(await response1.Content.ReadAsStringAsync());
 
 
                     if (priceData == null)
@@ -203,7 +138,7 @@ namespace cryptomonitor
                 await botClient.SendMessage(
                     chatId: TelegramChatId,
                     text: message,
-                    parseMode: ParseMode.Html 
+                    parseMode: ParseMode.Html
                 );
                 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] [ALERT SENT] Telegram message has sent to Chat ID: {TelegramChatId}");
             }
