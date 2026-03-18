@@ -5,3 +5,5 @@
 /.vs
 /cryptomonitor/.vs/cryptomonitor
 /cryptomonitor/cryptomonitor/obj
+/cryptomonitor/CryptoMonitor.Test/bin/
+/cryptomonitor/CryptoMonitor.Test/obj/
